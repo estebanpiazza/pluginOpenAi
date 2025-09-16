@@ -1,0 +1,1 @@
+<?php echo "<h1>🤖 ChatGPT Assistant Test</h1>"; echo "<p>Si ves esto, el archivo PHP funciona correctamente.</p>"; ?>

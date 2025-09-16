@@ -1,0 +1,14 @@
+url:
+https://moodle-moodle.z0pg2g.easypanel.host/local/openai_chatbot/index.php
+
+api secreta gpt:
+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
+
+asistente:
+asst_ziv1h6UYLrcbnkAU3AduwQaq
+
+ssh
+ssh usrcodeki@46.250.175.229
+
+pass
+m3oUjbkhooVF
