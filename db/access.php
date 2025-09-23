@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version information for OpenAI ChatBot Block
+ * Capabilities for OpenAI ChatBot Block
  *
  * @package    block_openai_chatbot
  * @copyright  2025 Codeki
@@ -24,11 +24,26 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'block_openai_chatbot';
-$plugin->version = 2025092300; // YYYYMMDDHH format
-$plugin->requires = 2022112800; // Moodle 4.1 or later
-$plugin->supported = [401, 404]; // Moodle 4.1 to 4.4
-$plugin->maturity = MATURITY_STABLE;
-$plugin->release = '1.0.0';
+$capabilities = array(
 
-$plugin->dependencies = array();
+    'block/openai_chatbot:addinstance' => array(
+        'riskbitmask' => RISK_SPAM | RISK_XSS,
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_BLOCK,
+        'archetypes' => array(
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW
+        ),
+        'clonepermissionsfrom' => 'moodle/site:manageblocks'
+    ),
+
+    'block/openai_chatbot:myaddinstance' => array(
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => array(
+            'user' => CAP_ALLOW
+        ),
+        'clonepermissionsfrom' => 'moodle/my:manageblocks'
+    ),
+
+);

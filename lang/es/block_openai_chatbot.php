@@ -1,0 +1,58 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Spanish language strings for OpenAI ChatBot Block
+ *
+ * @package    block_openai_chatbot
+ * @copyright  2025 Codeki
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+// Plugin info
+$string['pluginname'] = 'ChatBot OpenAI';
+$string['openai_chatbot'] = 'ChatBot OpenAI';
+$string['openai_chatbot:addinstance'] = 'Agregar un nuevo bloque ChatBot OpenAI';
+$string['openai_chatbot:myaddinstance'] = 'Agregar un nuevo bloque ChatBot OpenAI al Panel';
+
+// Block interface
+$string['chatbot_title'] = 'Tutor IA';
+$string['welcome_message'] = '💡 Haz una pregunta para empezar a chatear con el tutor de IA';
+$string['input_placeholder'] = 'Haz tu pregunta...';
+$string['ask_button'] = 'Preguntar';
+$string['response_header'] = 'Respuesta:';
+$string['error_prefix'] = 'Error:';
+
+// Configuration
+$string['config_missing'] = 'Falta la configuración de la API de OpenAI. Por favor contacta a tu administrador.';
+
+// Settings
+$string['settings_general'] = 'Configuración General';
+$string['settings_general_desc'] = 'Configura los ajustes de integración del ChatBot OpenAI.';
+$string['settings_apikey'] = 'Clave API de OpenAI';
+$string['settings_apikey_desc'] = 'Introduce tu clave API de OpenAI. Puedes obtener una en https://platform.openai.com/';
+$string['settings_assistantid'] = 'ID del Asistente';
+$string['settings_assistantid_desc'] = 'Introduce el ID de tu Asistente de OpenAI. Crea uno en https://platform.openai.com/assistants';
+$string['settings_course_context'] = 'Habilitar Contexto del Curso';
+$string['settings_course_context_desc'] = 'Cuando está habilitado, el chatbot recibirá información sobre el curso actual para proporcionar respuestas más relevantes.';
+$string['settings_max_response_time'] = 'Tiempo Máximo de Respuesta';
+$string['settings_max_response_time_desc'] = 'Tiempo máximo en segundos para esperar la respuesta de OpenAI (predeterminado: 30)';
+
+// Privacy
+$string['privacy:metadata'] = 'El bloque ChatBot OpenAI no almacena datos personales localmente. Sin embargo, las preguntas de los usuarios se envían a los servidores de OpenAI para su procesamiento.';
+$string['privacy:metadata:openai'] = 'Las preguntas de los usuarios se envían a OpenAI para su procesamiento';
+$string['privacy:metadata:openai:question'] = 'La pregunta realizada por el usuario';
+$string['privacy:metadata:openai:course_context'] = 'Información del curso para proporcionar contexto para las respuestas';
