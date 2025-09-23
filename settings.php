@@ -18,7 +18,7 @@
  * Settings for OpenAI ChatBot Block
  *
  * @package    block_openai_chatbot
- * @copyright  2025 Codeki
+ * @copyright  2025 Your Institution
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -30,6 +30,14 @@ if ($ADMIN->fulltree) {
         'block_openai_chatbot/general',
         get_string('settings_general', 'block_openai_chatbot'),
         get_string('settings_general_desc', 'block_openai_chatbot')
+    ));
+    
+    $settings->add(new admin_setting_configtext(
+        'block_openai_chatbot/bot_name',
+        get_string('settings_bot_name', 'block_openai_chatbot'),
+        get_string('settings_bot_name_desc', 'block_openai_chatbot'),
+        'AI Tutor',
+        PARAM_TEXT
     ));
     
     $settings->add(new admin_setting_configtext(

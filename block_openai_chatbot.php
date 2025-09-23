@@ -22,7 +22,7 @@
  * and educational support.
  *
  * @package    block_openai_chatbot
- * @copyright  2025 Codeki
+ * @copyright  2025 Your Institution
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -80,11 +80,14 @@ class block_openai_chatbot extends block_base {
         $PAGE->requires->css('/blocks/openai_chatbot/styles.css');
         $PAGE->requires->js('/blocks/openai_chatbot/chatbot.js');
         
+        // Get bot name from configuration
+        $bot_name = get_config('block_openai_chatbot', 'bot_name') ?: get_string('chatbot_title', 'block_openai_chatbot');
+        
         $html = '';
         
         // Chatbot container
         $html .= '<div class="chatbot-container">';
-        $html .= '<div class="chatbot-header">🤖 ' . get_string('chatbot_title', 'block_openai_chatbot') . '</div>';
+        $html .= '<div class="chatbot-header">🤖 ' . htmlspecialchars($bot_name) . '</div>';
         
         // Response area (top)
         $html .= '<div id="chatbot_response_' . $this->instance->id . '" class="chatbot-response">';

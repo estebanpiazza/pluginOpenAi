@@ -151,7 +151,7 @@ This plugin is licensed under the [GNU GPL v3](http://www.gnu.org/copyleft/gpl.h
 
 ## Credits
 
-Developed by **Codeki** - 2025
+Developed for the Moodle Community - 2025
 
 ## Changelog
 

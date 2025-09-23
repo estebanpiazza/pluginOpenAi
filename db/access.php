@@ -18,7 +18,7 @@
  * Capabilities for OpenAI ChatBot Block
  *
  * @package    block_openai_chatbot
- * @copyright  2025 Codeki
+ * @copyright  2025
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

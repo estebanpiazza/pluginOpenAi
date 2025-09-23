@@ -15,13 +15,13 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * OpenAI ChatBot Local Plugin - Standalone Interface
+ * OpenAI ChatBot Block - Standalone Interface
  *
  * This file provides a standalone interface for the OpenAI ChatBot
- * when accessed directly as a local plugin.
+ * when accessed directly as a block plugin.
  *
- * @package    local_openai_chatbot
- * @copyright  2025 Codeki
+ * @package    block_openai_chatbot
+ * @copyright  2025 Your Institution
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -30,13 +30,13 @@ require_login();
 
 $context = context_system::instance();
 $PAGE->set_context($context);
-$PAGE->set_url(new moodle_url('/local/openai_chatbot/index.php'));
+$PAGE->set_url(new moodle_url('/blocks/openai_chatbot/index.php'));
 $PAGE->set_title('OpenAI ChatBot');
 $PAGE->set_heading('OpenAI ChatBot');
 
 // Check configuration
-$apikey = get_config('local_openai_chatbot', 'apikey');
-$assistantid = get_config('local_openai_chatbot', 'assistantid');
+$apikey = get_config('block_openai_chatbot', 'apikey');
+$assistantid = get_config('block_openai_chatbot', 'assistantid');
 
 echo $OUTPUT->header();
 

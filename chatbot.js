@@ -1,4 +1,4 @@
-// CodekiBot Tutor - AJAX functionality
+// OpenAI ChatBot - AJAX functionality
 document.addEventListener('DOMContentLoaded', function() {
     // Buscar todos los formularios de chatbot
     const chatbotForms = document.querySelectorAll('[id^="chatbot_form_"]');
@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
             responseDiv.innerHTML = 
                 '<div class="chatbot-question">📝 ' + escapeHtml(question) + '</div>' +
                 '<div class="chatbot-loading">' +
-                '🤖 CodekiBot está pensando' +
+                '🤖 El asistente está pensando' +
                 '<span class="chatbot-dots">.</span>' +
                 '<span class="chatbot-dots">.</span>' +
                 '<span class="chatbot-dots">.</span>' +
