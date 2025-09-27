@@ -24,7 +24,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-if ($ADMIN->fulltree) {
+if ($hassiteconfig) {
+    
+    $settings = new admin_settingpage('block_openai_chatbot', get_string('pluginname', 'block_openai_chatbot'));
     
     $settings->add(new admin_setting_heading(
         'block_openai_chatbot/general',
@@ -71,4 +73,6 @@ if ($ADMIN->fulltree) {
         PARAM_INT
     ));
     
+    // Add to admin tree
+    $ADMIN->add('blocksettings', $settings);
 }
