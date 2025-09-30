@@ -1,15 +1,5 @@
 <?php
-// This file is part of Moodle - h# Settings
-$string['settings_general'] = 'General Settings';
-$string['settings_general_desc'] = 'Configure the OpenAI ChatBot integration settings.';
-$string['settings_bot_name'] = 'Bot Name';
-$string['settings_bot_name_desc'] = 'Customize the name of your chatbot as it appears to users.';
-$string['settings_apikey'] = 'OpenAI API Key';
-$string['settings_apikey_desc'] = 'Enter your OpenAI API key. You can get one from https://platform.openai.com/';
-$string['settings_assistantid'] = 'Assistant ID';
-$string['settings_assistantid_desc'] = 'Enter the ID of your OpenAI Assistant. Create one at https://platform.openai.com/assistants';
-$string['settings_course_context'] = 'Enable Course Context';
-$string['settings_course_context_desc'] = 'When enabled, the chatbot will receive information about the current course to provide more relevant responses.';dle.org/
+// This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -52,10 +42,12 @@ $string['config_missing'] = 'OpenAI API configuration is missing. Please contact
 // Settings
 $string['settings_general'] = 'General Settings';
 $string['settings_general_desc'] = 'Configure the OpenAI ChatBot integration settings.';
+$string['settings_bot_name'] = 'Bot Name';
+$string['settings_bot_name_desc'] = 'Customize the name of your chatbot as it appears to users.';
 $string['settings_apikey'] = 'OpenAI API Key';
 $string['settings_apikey_desc'] = 'Enter your OpenAI API key. You can get one from https://platform.openai.com/';
 $string['settings_assistantid'] = 'Assistant ID';
-$string['settings_assistantid_desc'] = 'Enter the ID of your OpenAI Assistant. Create one at https://platform.openai.com/assistants';
+$string['settings_assistantid_desc'] = 'Enter the ID of your OpenAI Assistant. Create one at https://platform.openai.chat/assistants';
 $string['settings_course_context'] = 'Enable Course Context';
 $string['settings_course_context_desc'] = 'When enabled, the chatbot will receive information about the current course to provide more relevant responses.';
 $string['settings_max_response_time'] = 'Maximum Response Time';
