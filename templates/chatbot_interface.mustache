@@ -1,0 +1,77 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template block_openai_chatbot/chatbot_interface
+
+    OpenAI ChatBot interface template.
+
+    Context variables required for this template:
+    * instanceid - The block instance ID
+    * botname - The chatbot name
+    * welcomemessage - Welcome message text
+    * placeholdertext - Input placeholder text
+    * buttontext - Submit button text
+    * sesskey - Session key for security
+    * response - Optional response content to display
+
+    Example context (json):
+    {
+        "instanceid": 123,
+        "botname": "AI Tutor",
+        "welcomemessage": "Ask me a question to get started!",
+        "placeholdertext": "Type your question...",
+        "buttontext": "Ask",
+        "sesskey": "abc123",
+        "response": "<div>Previous response</div>"
+    }
+}}
+
+<div class="chatbot-container">
+    <div class="chatbot-header">🤖 {{botname}}</div>
+    
+    <div id="chatbot_response_{{instanceid}}" class="chatbot-response">
+        {{#response}}
+            {{{response}}}
+        {{/response}}
+        {{^response}}
+            <p class="chatbot-welcome">{{welcomemessage}}</p>
+        {{/response}}
+    </div>
+    
+    <form class="chatbot-form" method="post" action="" id="chatbot_form_{{instanceid}}">
+        <input type="hidden" name="sesskey" value="{{sesskey}}">
+        <input type="hidden" name="blockid" value="{{instanceid}}">
+        
+        <div class="chatbot-input-group">
+            <input type="text" 
+                   name="chatbot_question" 
+                   id="chatbot_question_{{instanceid}}" 
+                   placeholder="{{placeholdertext}}" 
+                   class="chatbot-input" 
+                   required
+                   data-original-button-text="{{buttontext}}">
+        </div>
+        
+        <div class="chatbot-button-container">
+            <button type="submit" 
+                    class="chatbot-button" 
+                    id="chatbot_button_{{instanceid}}">
+                {{buttontext}}
+            </button>
+        </div>
+    </form>
+</div>

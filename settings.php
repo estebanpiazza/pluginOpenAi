@@ -18,7 +18,7 @@
  * Settings for OpenAI ChatBot Block
  *
  * @package    block_openai_chatbot
- * @copyright  2025 Your Institution
+ * @copyright  2025 Esteban Piazza <esteban@codeki.org>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

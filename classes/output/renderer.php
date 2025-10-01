@@ -15,20 +15,32 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version information for OpenAI ChatBot Block
+ * Renderer for OpenAI ChatBot Block
  *
  * @package    block_openai_chatbot
  * @copyright  2025 Esteban Piazza <esteban@codeki.org>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace block_openai_chatbot\output;
+
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'block_openai_chatbot';
-$plugin->version = 2025100100; // YYYYMMDDHH format
-$plugin->requires = 2022112800; // Moodle 4.1 or later
-$plugin->supported = [401, 404]; // Moodle 4.1 to 4.4
-$plugin->maturity = MATURITY_STABLE;
-$plugin->release = '1.0.0';
+use plugin_renderer_base;
 
-$plugin->dependencies = array();
+/**
+ * Renderer class for OpenAI ChatBot block
+ */
+class renderer extends plugin_renderer_base {
+
+    /**
+     * Render the chatbot interface
+     *
+     * @param chatbot_interface $interface The interface renderable
+     * @return string HTML output
+     */
+    public function render_chatbot_interface(chatbot_interface $interface) {
+        $data = $interface->export_for_template($this);
+        return $this->render_from_template('block_openai_chatbot/chatbot_interface', $data);
+    }
+}

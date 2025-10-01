@@ -22,7 +22,7 @@
  * and educational support.
  *
  * @package    block_openai_chatbot
- * @copyright  2025 Your Institution
+ * @copyright  2025 Esteban Piazza <esteban@codeki.org>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -69,52 +69,39 @@ class block_openai_chatbot extends block_base {
     }
     
     /**
-     * Generate the chatbot HTML interface
+     * Generate the chatbot HTML interface using templates
      *
      * @return string HTML content for the chatbot interface
      */
     private function get_chatbot_html() {
         global $OUTPUT, $PAGE;
         
-        // Add CSS and JS resources
-        $PAGE->requires->css('/blocks/openai_chatbot/styles.css');
-        $PAGE->requires->js('/blocks/openai_chatbot/chatbot.js');
+        // Add CSS and modern JS module
+        $PAGE->requires->css('/blocks/block_openai_chatbot/styles.css');
+        $PAGE->requires->js_call_amd('block_openai_chatbot/chatbot', 'init');
         
         // Get bot name from configuration
         $bot_name = get_config('block_openai_chatbot', 'bot_name') ?: get_string('chatbot_title', 'block_openai_chatbot');
         
-        $html = '';
-        
-        // Chatbot container
-        $html .= '<div class="chatbot-container">';
-        $html .= '<div class="chatbot-header">🤖 ' . htmlspecialchars($bot_name) . '</div>';
-        
-        // Response area (top)
-        $html .= '<div id="chatbot_response_' . $this->instance->id . '" class="chatbot-response">';
-        
         // Process question if submitted
-        if (isset($_POST['chatbot_question']) && !empty($_POST['chatbot_question']) && 
-            isset($_POST['blockid']) && $_POST['blockid'] == $this->instance->id) {
-            $html .= $this->process_question($_POST['chatbot_question']);
-        } else {
-            $html .= '<p class="chatbot-welcome">' . get_string('welcome_message', 'block_openai_chatbot') . '</p>';
+        $question = optional_param('chatbot_question', '', PARAM_TEXT);
+        $blockid = optional_param('blockid', 0, PARAM_INT);
+        $response = null;
+        
+        if (!empty($question) && $blockid == $this->instance->id && confirm_sesskey()) {
+            $response = $this->process_question($question);
         }
         
-        $html .= '</div>';
+        // Create the renderable interface
+        $interface = new \block_openai_chatbot\output\chatbot_interface(
+            $this->instance->id,
+            $bot_name,
+            $response
+        );
         
-        // Form (bottom)
-        $html .= '<form class="chatbot-form" method="post" action="" id="chatbot_form_' . $this->instance->id . '">';
-        $html .= '<input type="hidden" name="blockid" value="' . $this->instance->id . '">';
-        $html .= '<div class="chatbot-input-group">';
-        $html .= '<input type="text" name="chatbot_question" id="chatbot_question_' . $this->instance->id . '" placeholder="' . get_string('input_placeholder', 'block_openai_chatbot') . '" class="chatbot-input" required>';
-        $html .= '</div>';
-        $html .= '<div class="chatbot-button-container">';
-        $html .= '<button type="submit" class="chatbot-button" id="chatbot_button_' . $this->instance->id . '">' . get_string('ask_button', 'block_openai_chatbot') . '</button>';
-        $html .= '</div>';
-        $html .= '</form>';
-        $html .= '</div>';
-        
-        return $html;
+        // Get the renderer and render the interface
+        $renderer = $PAGE->get_renderer('block_openai_chatbot');
+        return $renderer->render_chatbot_interface($interface);
     }
     
     /**
@@ -211,21 +198,17 @@ class block_openai_chatbot extends block_base {
      * @return array Success status and thread ID or error message
      */
     private function create_openai_thread($apikey) {
-        $ch = curl_init('https://api.openai.com/v1/threads');
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+        $curl = new \curl();
+        $curl->setHeader([
             'Authorization: Bearer ' . $apikey,
             'Content-Type: application/json',
             'OpenAI-Beta: assistants=v2'
-        ));
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(array()));
+        ]);
         
-        $response = curl_exec($ch);
-        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
+        $response = $curl->post('https://api.openai.com/v1/threads', json_encode(array()));
+        $info = $curl->get_info();
         
-        if ($httpcode != 200) {
+        if ($info['http_code'] != 200) {
             return array('success' => false, 'error' => 'Failed to create conversation thread');
         }
         
@@ -242,24 +225,22 @@ class block_openai_chatbot extends block_base {
      * @return array Success status or error message
      */
     private function add_message_to_thread($apikey, $threadId, $message) {
-        $ch = curl_init('https://api.openai.com/v1/threads/' . $threadId . '/messages');
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+        $curl = new \curl();
+        $curl->setHeader([
             'Authorization: Bearer ' . $apikey,
             'Content-Type: application/json',
             'OpenAI-Beta: assistants=v2'
-        ));
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(array(
+        ]);
+        
+        $data = json_encode(array(
             'role' => 'user',
             'content' => $message
-        )));
+        ));
         
-        $response = curl_exec($ch);
-        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
+        $response = $curl->post('https://api.openai.com/v1/threads/' . $threadId . '/messages', $data);
+        $info = $curl->get_info();
         
-        if ($httpcode != 200) {
+        if ($info['http_code'] != 200) {
             return array('success' => false, 'error' => 'Failed to send message');
         }
         
@@ -276,23 +257,18 @@ class block_openai_chatbot extends block_base {
      */
     private function create_and_wait_for_run($apikey, $threadId, $assistantId) {
         // Create run
-        $ch = curl_init('https://api.openai.com/v1/threads/' . $threadId . '/runs');
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+        $curl = new \curl();
+        $curl->setHeader([
             'Authorization: Bearer ' . $apikey,
             'Content-Type: application/json',
             'OpenAI-Beta: assistants=v2'
-        ));
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(array(
-            'assistant_id' => $assistantId
-        )));
+        ]);
         
-        $response = curl_exec($ch);
-        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
+        $data = json_encode(array('assistant_id' => $assistantId));
+        $response = $curl->post('https://api.openai.com/v1/threads/' . $threadId . '/runs', $data);
+        $info = $curl->get_info();
         
-        if ($httpcode != 200) {
+        if ($info['http_code'] != 200) {
             return array('success' => false, 'error' => 'Failed to execute assistant');
         }
         
@@ -307,18 +283,15 @@ class block_openai_chatbot extends block_base {
             sleep(1);
             $attempts++;
             
-            $ch = curl_init('https://api.openai.com/v1/threads/' . $threadId . '/runs/' . $runId);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            $curl->setHeader([
                 'Authorization: Bearer ' . $apikey,
                 'OpenAI-Beta: assistants=v2'
-            ));
+            ]);
             
-            $response = curl_exec($ch);
-            $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            curl_close($ch);
+            $response = $curl->get('https://api.openai.com/v1/threads/' . $threadId . '/runs/' . $runId);
+            $info = $curl->get_info();
             
-            if ($httpcode != 200) {
+            if ($info['http_code'] != 200) {
                 return array('success' => false, 'error' => 'Failed to check run status');
             }
             
@@ -343,18 +316,16 @@ class block_openai_chatbot extends block_base {
      * @return array Success status and content or error message
      */
     private function get_assistant_response($apikey, $threadId) {
-        $ch = curl_init('https://api.openai.com/v1/threads/' . $threadId . '/messages');
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+        $curl = new \curl();
+        $curl->setHeader([
             'Authorization: Bearer ' . $apikey,
             'OpenAI-Beta: assistants=v2'
-        ));
+        ]);
         
-        $response = curl_exec($ch);
-        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
+        $response = $curl->get('https://api.openai.com/v1/threads/' . $threadId . '/messages');
+        $info = $curl->get_info();
         
-        if ($httpcode != 200) {
+        if ($info['http_code'] != 200) {
             return array('success' => false, 'error' => 'Failed to get response');
         }
         

@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version information for OpenAI ChatBot Block
+ * External services definition for OpenAI ChatBot Block
  *
  * @package    block_openai_chatbot
  * @copyright  2025 Esteban Piazza <esteban@codeki.org>
@@ -24,11 +24,23 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'block_openai_chatbot';
-$plugin->version = 2025100100; // YYYYMMDDHH format
-$plugin->requires = 2022112800; // Moodle 4.1 or later
-$plugin->supported = [401, 404]; // Moodle 4.1 to 4.4
-$plugin->maturity = MATURITY_STABLE;
-$plugin->release = '1.0.0';
+$functions = array(
+    'block_openai_chatbot_ask_question' => array(
+        'classname' => 'block_openai_chatbot_external',
+        'methodname' => 'ask_question',
+        'classpath' => 'blocks/openai_chatbot/classes/external.php',
+        'description' => 'Submit a question to the OpenAI Assistant',
+        'type' => 'write',
+        'ajax' => true,
+        'capabilities' => 'block/openai_chatbot:addinstance',
+        'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
+    )
+);
 
-$plugin->dependencies = array();
+$services = array(
+    'OpenAI ChatBot Service' => array(
+        'functions' => array('block_openai_chatbot_ask_question'),
+        'restrictedusers' => 0,
+        'enabled' => 1,
+    )
+);
