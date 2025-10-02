@@ -64,3 +64,15 @@ $string['privacy:metadata'] = 'El bloque OpenAI ChatBot no almacena datos person
 $string['privacy:metadata:openai'] = 'Las preguntas de los usuarios se envían a OpenAI para su procesamiento';
 $string['privacy:metadata:openai:question'] = 'La pregunta hecha por el usuario';
 $string['privacy:metadata:openai:course_context'] = 'Información del curso para proporcionar contexto a las respuestas';
+
+// Additional strings
+$string['no_config'] = 'Falta la configuración de la API de OpenAI. Por favor contacta a tu administrador.';
+$string['no_answer'] = '[Sin respuesta]';
+$string['timeout_error'] = 'La ejecución no terminó a tiempo. Estado: {$a}';
+$string['create_thread_error'] = 'Error al crear thread. Respuesta de API: {$a}';
+$string['create_run_error'] = 'Error al crear run. Respuesta de API: {$a}';
+$string['openai_api_error'] = 'Error de API de OpenAI: {$a}';
+$string['network_error'] = 'Ocurrió un error de red. Por favor inténtalo más tarde.';
+
+// Block capabilities
+$string['openai_chatbot:view'] = 'Ver bloque ChatBot OpenAI';

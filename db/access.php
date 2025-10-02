@@ -15,10 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Capabilities for OpenAI ChatBot Block
+ * Capabilities definitions for OpenAI ChatBot Block
  *
  * @package    block_openai_chatbot
- * @copyright  2025
+ * @copyright  2025 Esteban Piazza <esteban@codeki.org>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -44,6 +44,19 @@ $capabilities = array(
             'user' => CAP_ALLOW
         ),
         'clonepermissionsfrom' => 'moodle/my:manageblocks'
+    ),
+    
+    'block/openai_chatbot:view' => array(
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_BLOCK,
+        'archetypes' => array(
+            'guest' => CAP_ALLOW,
+            'user' => CAP_ALLOW,
+            'student' => CAP_ALLOW,
+            'teacher' => CAP_ALLOW,
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW
+        )
     ),
 
 );

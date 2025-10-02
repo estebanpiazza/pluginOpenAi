@@ -77,7 +77,7 @@ class block_openai_chatbot extends block_base {
         global $OUTPUT, $PAGE;
         
         // Add CSS and modern JS module
-        $PAGE->requires->css('/blocks/block_openai_chatbot/styles.css');
+        $PAGE->requires->css('/blocks/openai_chatbot/styles.css');
         $PAGE->requires->js_call_amd('block_openai_chatbot/chatbot', 'init');
         
         // Get bot name from configuration

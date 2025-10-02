@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * External services definition for OpenAI ChatBot Block
+ * Upgrade script for OpenAI ChatBot Block
  *
  * @package    block_openai_chatbot
  * @copyright  2025 Esteban Piazza <esteban@codeki.org>
@@ -24,23 +24,26 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$functions = array(
-    'block_openai_chatbot_ask_question' => array(
-        'classname' => 'block_openai_chatbot_external',
-        'methodname' => 'ask_question',
-        'classpath' => 'blocks/openai_chatbot/classes/external.php',
-        'description' => 'Submit a question to the OpenAI Assistant',
-        'type' => 'write',
-        'ajax' => true,
-        'capabilities' => 'block/openai_chatbot:view',
-        'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
-    )
-);
+/**
+ * Upgrade function for the block
+ *
+ * @param int $oldversion The old version of the block
+ * @return bool True on success
+ */
+function xmldb_block_openai_chatbot_upgrade($oldversion) {
+    global $DB;
 
-$services = array(
-    'OpenAI ChatBot Service' => array(
-        'functions' => array('block_openai_chatbot_ask_question'),
-        'restrictedusers' => 0,
-        'enabled' => 1,
-    )
-);
+    $dbman = $DB->get_manager();
+
+    // Future upgrade steps will be added here when needed.
+    
+    if ($oldversion < 2025100200) {
+        // Example of future upgrade step:
+        // Add any necessary database changes or configuration updates here.
+        
+        // Save point reached.
+        upgrade_block_savepoint(true, 2025100200, 'openai_chatbot');
+    }
+
+    return true;
+}
