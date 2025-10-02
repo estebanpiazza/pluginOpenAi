@@ -14,19 +14,34 @@ define(['jquery', 'core/ajax', 'core/str'], function($, Ajax, Str) {
      * Initialize the chatbot functionality
      */
     var init = function() {
-        // Find all chatbot forms on the page
-        $('[id^="chatbot_form_"]').each(function() {
-            var form = $(this);
-            var instanceId = form.attr('id').replace('chatbot_form_', '');
+        // Find all chatbot containers on the page
+        $('.chatbot-container').each(function() {
+            var container = $(this);
+            var contextId = container.data('contextid');
+            var formDiv = container.find('[id^="chatbot_form_"]');
+            var instanceId = formDiv.attr('id').replace('chatbot_form_', '');
             var responseDiv = $('#chatbot_response_' + instanceId);
             var questionInput = $('#chatbot_question_' + instanceId);
             var submitButton = $('#chatbot_button_' + instanceId);
 
-            form.on('submit', function(e) {
+            // Handle button click
+            submitButton.on('click', function(e) {
                 e.preventDefault();
-                
+                handleQuestion();
+            });
+
+            // Handle Enter key press
+            questionInput.on('keypress', function(e) {
+                if (e.which === 13) { // Enter key
+                    e.preventDefault();
+                    handleQuestion();
+                }
+            });
+
+            function handleQuestion() {
                 var question = questionInput.val().trim();
                 if (!question) {
+                    questionInput.focus();
                     return;
                 }
 
@@ -34,17 +49,27 @@ define(['jquery', 'core/ajax', 'core/str'], function($, Ajax, Str) {
                 questionInput.prop('disabled', true);
                 submitButton.prop('disabled', true);
                 
-                // Get thinking text
+                // Get thinking text and update button
                 Str.get_string('js_thinking', 'block_openai_chatbot').then(function(thinkingText) {
                     submitButton.text(thinkingText);
+                }).catch(function() {
+                    submitButton.text('Thinking...');
                 });
 
-                // Show question and loading
+                // Show question and loading immediately
                 var loadingHtml = '<div class="chatbot-question">📝 ' + escapeHtml(question) + '</div>';
                 
                 Str.get_string('js_assistant_thinking', 'block_openai_chatbot').then(function(assistantThinking) {
                     loadingHtml += '<div class="chatbot-loading">' +
                         '🤖 ' + assistantThinking +
+                        '<span class="chatbot-dots">.</span>' +
+                        '<span class="chatbot-dots">.</span>' +
+                        '<span class="chatbot-dots">.</span>' +
+                        '</div>';
+                    responseDiv.html(loadingHtml);
+                }).catch(function() {
+                    loadingHtml += '<div class="chatbot-loading">' +
+                        '🤖 The assistant is thinking' +
                         '<span class="chatbot-dots">.</span>' +
                         '<span class="chatbot-dots">.</span>' +
                         '<span class="chatbot-dots">.</span>' +
@@ -58,35 +83,56 @@ define(['jquery', 'core/ajax', 'core/str'], function($, Ajax, Str) {
                     args: {
                         question: question,
                         blockinstanceid: parseInt(instanceId),
-                        contextid: M.cfg.contextid
+                        contextid: contextId
                     }
                 };
 
                 Ajax.call([request])[0].done(function(response) {
                     if (response.success) {
-                        responseDiv.html(response.html);
+                        // Show the question and answer
+                        var resultHtml = '<div class="chatbot-question">📝 ' + escapeHtml(question) + '</div>';
+                        resultHtml += response.html;
+                        responseDiv.html(resultHtml);
                     } else {
+                        var errorHtml = '<div class="chatbot-question">📝 ' + escapeHtml(question) + '</div>';
                         Str.get_string('js_error_occurred', 'block_openai_chatbot').then(function(errorText) {
-                            responseDiv.html('<div class="alert alert-danger">' + errorText + ' ' + response.message + '</div>');
+                            errorHtml += '<div class="alert alert-danger">' + errorText + ' ' + response.message + '</div>';
+                            responseDiv.html(errorHtml);
+                        }).catch(function() {
+                            errorHtml += '<div class="alert alert-danger">An error occurred: ' + response.message + '</div>';
+                            responseDiv.html(errorHtml);
                         });
                     }
-                }).fail(function() {
+                }).fail(function(error) {
+                    var errorHtml = '<div class="chatbot-question">📝 ' + escapeHtml(question) + '</div>';
                     Str.get_string('js_error_occurred', 'block_openai_chatbot').then(function(errorText) {
-                        responseDiv.html('<div class="alert alert-danger">' + errorText + '</div>');
+                        errorHtml += '<div class="alert alert-danger">' + errorText + '</div>';
+                        responseDiv.html(errorHtml);
+                    }).catch(function() {
+                        errorHtml += '<div class="alert alert-danger">Network error occurred</div>';
+                        responseDiv.html(errorHtml);
                     });
                 }).always(function() {
                     // Re-enable form
                     questionInput.prop('disabled', false);
                     submitButton.prop('disabled', false);
                     
-                    Str.get_string('ask_button', 'block_openai_chatbot').then(function(askText) {
-                        submitButton.text(askText);
-                    });
+                    // Restore button text
+                    var originalText = submitButton.data('original-text');
+                    if (originalText) {
+                        submitButton.text(originalText);
+                    } else {
+                        Str.get_string('ask_button', 'block_openai_chatbot').then(function(askText) {
+                            submitButton.text(askText);
+                        }).catch(function() {
+                            submitButton.text('Ask');
+                        });
+                    }
                     
-                    // Clear the input
-                    questionInput.val('');
+                    // Clear the input and focus
+                    questionInput.val('').focus();
                 });
-            });
+            }
         });
     };
 

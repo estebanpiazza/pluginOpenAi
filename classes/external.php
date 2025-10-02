@@ -165,9 +165,8 @@ class block_openai_chatbot_external extends external_api {
             throw new Exception($response['error']);
         }
 
-        // Format the response HTML.
-        $html = '<div class="chatbot-question">📝 ' . htmlspecialchars($original_question) . '</div>';
-        $html .= '<div class="chatbot-answer">';
+        // Format the response HTML (only the answer, question is handled by JavaScript).
+        $html = '<div class="chatbot-answer">';
         $html .= '<div class="chatbot-answer-header">🤖 ' . get_string('response_header', 'block_openai_chatbot') . '</div>';
         $html .= '<div class="chatbot-answer-content">' . nl2br(htmlspecialchars($response['content'])) . '</div>';
         $html .= '</div>';

@@ -50,12 +50,12 @@ class chatbot_interface implements renderable, templatable {
      *
      * @param int $instanceid Block instance ID
      * @param string $botname Bot name to display
-     * @param string|null $response Optional response content
+     * @param string|null $response Optional response content (deprecated, kept for compatibility)
      */
     public function __construct($instanceid, $botname, $response = null) {
         $this->instanceid = $instanceid;
         $this->botname = $botname;
-        $this->response = $response;
+        $this->response = $response; // Not used in AJAX mode
     }
 
     /**
@@ -65,17 +65,17 @@ class chatbot_interface implements renderable, templatable {
      * @return stdClass Data ready for use in a mustache template
      */
     public function export_for_template(renderer_base $output) {
+        global $PAGE;
+        
         $data = new stdClass();
         $data->instanceid = $this->instanceid;
         $data->botname = $this->botname;
         $data->welcomemessage = get_string('welcome_message', 'block_openai_chatbot');
         $data->placeholdertext = get_string('input_placeholder', 'block_openai_chatbot');
         $data->buttontext = get_string('ask_button', 'block_openai_chatbot');
-        $data->sesskey = sesskey();
+        $data->contextid = $PAGE->context->id;
         
-        if (!empty($this->response)) {
-            $data->response = $this->response;
-        }
+        // No server-side response processing in AJAX mode
         
         return $data;
     }

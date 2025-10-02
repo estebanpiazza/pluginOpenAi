@@ -17,7 +17,7 @@
 {{!
     @template block_openai_chatbot/chatbot_interface
 
-    OpenAI ChatBot interface template.
+    OpenAI ChatBot interface template - AJAX Version (No page refresh).
 
     Context variables required for this template:
     * instanceid - The block instance ID
@@ -25,8 +25,7 @@
     * welcomemessage - Welcome message text
     * placeholdertext - Input placeholder text
     * buttontext - Submit button text
-    * sesskey - Session key for security
-    * response - Optional response content to display
+    * contextid - Context ID for AJAX calls
 
     Example context (json):
     {
@@ -35,43 +34,33 @@
         "welcomemessage": "Ask me a question to get started!",
         "placeholdertext": "Type your question...",
         "buttontext": "Ask",
-        "sesskey": "abc123",
-        "response": "<div>Previous response</div>"
+        "contextid": 456
     }
 }}
 
-<div class="chatbot-container">
+<div class="chatbot-container" data-contextid="{{contextid}}">
     <div class="chatbot-header">🤖 {{botname}}</div>
     
     <div id="chatbot_response_{{instanceid}}" class="chatbot-response">
-        {{#response}}
-            {{{response}}}
-        {{/response}}
-        {{^response}}
-            <p class="chatbot-welcome">{{welcomemessage}}</p>
-        {{/response}}
+        <p class="chatbot-welcome">{{welcomemessage}}</p>
     </div>
     
-    <form class="chatbot-form" method="post" action="" id="chatbot_form_{{instanceid}}">
-        <input type="hidden" name="sesskey" value="{{sesskey}}">
-        <input type="hidden" name="blockid" value="{{instanceid}}">
-        
+    <div class="chatbot-form" id="chatbot_form_{{instanceid}}">
         <div class="chatbot-input-group">
             <input type="text" 
-                   name="chatbot_question" 
                    id="chatbot_question_{{instanceid}}" 
                    placeholder="{{placeholdertext}}" 
                    class="chatbot-input" 
-                   required
-                   data-original-button-text="{{buttontext}}">
+                   autocomplete="off">
         </div>
         
         <div class="chatbot-button-container">
-            <button type="submit" 
+            <button type="button" 
                     class="chatbot-button" 
-                    id="chatbot_button_{{instanceid}}">
+                    id="chatbot_button_{{instanceid}}"
+                    data-original-text="{{buttontext}}">
                 {{buttontext}}
             </button>
         </div>
-    </form>
+    </div>
 </div>

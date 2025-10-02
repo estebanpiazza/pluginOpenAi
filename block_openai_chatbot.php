@@ -53,14 +53,6 @@ class block_openai_chatbot extends block_base {
             return $this->content;
         }
         
-        // Handle AJAX requests
-        if (isset($_POST['ajax']) && $_POST['ajax'] == '1') {
-            $this->content = new stdClass;
-            $this->content->text = $this->get_chatbot_html();
-            $this->content->footer = '';
-            return $this->content;
-        }
-        
         $this->content = new stdClass;
         $this->content->text = $this->get_chatbot_html();
         $this->content->footer = '';
@@ -83,20 +75,10 @@ class block_openai_chatbot extends block_base {
         // Get bot name from configuration
         $bot_name = get_config('block_openai_chatbot', 'bot_name') ?: get_string('chatbot_title', 'block_openai_chatbot');
         
-        // Process question if submitted
-        $question = optional_param('chatbot_question', '', PARAM_TEXT);
-        $blockid = optional_param('blockid', 0, PARAM_INT);
-        $response = null;
-        
-        if (!empty($question) && $blockid == $this->instance->id && confirm_sesskey()) {
-            $response = $this->process_question($question);
-        }
-        
-        // Create the renderable interface
+        // Create the renderable interface (no server-side processing)
         $interface = new \block_openai_chatbot\output\chatbot_interface(
             $this->instance->id,
-            $bot_name,
-            $response
+            $bot_name
         );
         
         // Get the renderer and render the interface
