@@ -92,11 +92,6 @@ class block_openai_chatbot_external extends external_api {
         }
 
         try {
-            // Create an instance of the block to use its methods.
-            $blockclass = 'block_openai_chatbot';
-            $block = new $blockclass();
-            $block->instance = $blockinstance;
-
             // Get course context for the question.
             $coursecontext = self::get_course_context($context);
             $contextual_question = $coursecontext . "User question: " . $cleanquestion;
@@ -107,11 +102,13 @@ class block_openai_chatbot_external extends external_api {
             return $result;
 
         } catch (Exception $e) {
+            // Log the error for debugging
+            error_log('OpenAI ChatBot Error: ' . $e->getMessage());
+            
             return array(
                 'success' => false,
-                'message' => get_string('error_prefix', 'block_openai_chatbot') . ' ' . $e->getMessage(),
-                'html' => '<div class="alert alert-danger">' . 
-                         get_string('error_prefix', 'block_openai_chatbot') . ' ' . 
+                'message' => 'Error: ' . $e->getMessage(),
+                'html' => '<div class="alert alert-danger"><strong>Error:</strong> ' . 
                          htmlspecialchars($e->getMessage()) . '</div>'
             );
         }
@@ -282,10 +279,19 @@ class block_openai_chatbot_external extends external_api {
         $info = $curl->get_info();
         
         if ($info['http_code'] != 200) {
-            return array('success' => false, 'error' => 'Failed to execute assistant');
+            return array('success' => false, 'error' => 'Failed to execute assistant: HTTP ' . $info['http_code'] . ' - ' . $response);
         }
         
         $run = json_decode($response, true);
+        
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return array('success' => false, 'error' => 'Invalid JSON response when creating run');
+        }
+        
+        if (!isset($run['id'])) {
+            return array('success' => false, 'error' => 'Missing run ID in response');
+        }
+        
         $runId = $run['id'];
         
         // Wait for completion.
@@ -305,20 +311,32 @@ class block_openai_chatbot_external extends external_api {
             $info = $curl->get_info();
             
             if ($info['http_code'] != 200) {
-                return array('success' => false, 'error' => 'Failed to check run status');
+                return array('success' => false, 'error' => 'Failed to check run status: HTTP ' . $info['http_code']);
             }
             
             $runStatus = json_decode($response, true);
+            
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                return array('success' => false, 'error' => 'Invalid JSON in run status response');
+            }
+            
+            if (!isset($runStatus['status'])) {
+                return array('success' => false, 'error' => 'Missing status in run response');
+            }
+            
             $status = $runStatus['status'];
             
             if ($status == 'completed') {
                 return array('success' => true);
-            } else if ($status == 'failed' || $status == 'cancelled' || $status == 'expired') {
-                return array('success' => false, 'error' => 'Assistant failed to process the question');
+            } else if ($status == 'failed') {
+                $errorDetails = isset($runStatus['last_error']) ? $runStatus['last_error']['message'] : 'Unknown error';
+                return array('success' => false, 'error' => 'Assistant failed: ' . $errorDetails);
+            } else if ($status == 'cancelled' || $status == 'expired') {
+                return array('success' => false, 'error' => 'Assistant run was ' . $status);
             }
         }
         
-        return array('success' => false, 'error' => 'Assistant response timeout');
+        return array('success' => false, 'error' => 'Assistant response timeout after ' . $maxAttempts . ' attempts');
     }
 
     /**
@@ -338,21 +356,35 @@ class block_openai_chatbot_external extends external_api {
         $info = $curl->get_info();
         
         if ($info['http_code'] != 200) {
-            return array('success' => false, 'error' => 'Failed to get response');
+            return array('success' => false, 'error' => 'Failed to get response: HTTP ' . $info['http_code']);
         }
         
         $messages = json_decode($response, true);
         
-        // Find assistant response.
+        // Check if JSON decode was successful
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return array('success' => false, 'error' => 'Invalid JSON response from OpenAI');
+        }
+        
+        // Check if messages data exists
+        if (!isset($messages['data']) || !is_array($messages['data'])) {
+            return array('success' => false, 'error' => 'Invalid message format from OpenAI');
+        }
+        
+        // Find assistant response
         foreach ($messages['data'] as $message) {
-            if ($message['role'] == 'assistant') {
-                $content = $message['content'][0];
-                if ($content['type'] == 'text') {
-                    return array('success' => true, 'content' => $content['text']['value']);
+            if (isset($message['role']) && $message['role'] == 'assistant') {
+                if (isset($message['content']) && is_array($message['content']) && count($message['content']) > 0) {
+                    $content = $message['content'][0];
+                    if (isset($content['type']) && $content['type'] == 'text') {
+                        if (isset($content['text']['value'])) {
+                            return array('success' => true, 'content' => $content['text']['value']);
+                        }
+                    }
                 }
             }
         }
         
-        return array('success' => false, 'error' => 'No response found');
+        return array('success' => false, 'error' => 'No assistant response found in messages');
     }
 }
