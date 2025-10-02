@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'block_openai_chatbot';
-$plugin->version = 2025100200; // YYYYMMDDHH format - Updated version
+$plugin->version = 2025100400; // YYYYMMDDHH format - AJAX Fixed + Instant Feedback
 $plugin->requires = 2022112800; // Moodle 4.1 or later
 $plugin->supported = [401, 404]; // Moodle 4.1 to 4.4
 $plugin->maturity = MATURITY_STABLE;

@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 /**
  * OpenAI ChatBot JavaScript module
  *
@@ -45,37 +44,64 @@ define(['jquery', 'core/ajax', 'core/str'], function($, Ajax, Str) {
                     return;
                 }
 
-                // Disable form elements
+                // FEEDBACK INMEDIATO - Mostrar "Escribiendo..." inmediatamente
+                Str.get_string('js_writing', 'block_openai_chatbot').then(function(writingText) {
+                    submitButton.text(writingText);
+                }).catch(function() {
+                    submitButton.text('Escribiendo...');
+                });
+                
                 questionInput.prop('disabled', true);
                 submitButton.prop('disabled', true);
                 
-                // Get thinking text and update button
-                Str.get_string('js_thinking', 'block_openai_chatbot').then(function(thinkingText) {
-                    submitButton.text(thinkingText);
+                // Mostrar pregunta y estado inicial inmediatamente
+                var initialHtml = '<div class="chatbot-question">📝 ' + escapeHtml(question) + '</div>';
+                Str.get_string('js_writing_question', 'block_openai_chatbot').then(function(writingQuestion) {
+                    initialHtml += '<div class="chatbot-loading">' +
+                        '✍️ ' + writingQuestion +
+                        '<span class="chatbot-dots">.</span>' +
+                        '<span class="chatbot-dots">.</span>' +
+                        '<span class="chatbot-dots">.</span>' +
+                        '</div>';
+                    responseDiv.html(initialHtml);
                 }).catch(function() {
-                    submitButton.text('Thinking...');
+                    initialHtml += '<div class="chatbot-loading">' +
+                        '✍️ Escribiendo pregunta' +
+                        '<span class="chatbot-dots">.</span>' +
+                        '<span class="chatbot-dots">.</span>' +
+                        '<span class="chatbot-dots">.</span>' +
+                        '</div>';
+                    responseDiv.html(initialHtml);
                 });
 
-                // Show question and loading immediately
-                var loadingHtml = '<div class="chatbot-question">📝 ' + escapeHtml(question) + '</div>';
-                
-                Str.get_string('js_assistant_thinking', 'block_openai_chatbot').then(function(assistantThinking) {
-                    loadingHtml += '<div class="chatbot-loading">' +
-                        '🤖 ' + assistantThinking +
-                        '<span class="chatbot-dots">.</span>' +
-                        '<span class="chatbot-dots">.</span>' +
-                        '<span class="chatbot-dots">.</span>' +
-                        '</div>';
-                    responseDiv.html(loadingHtml);
-                }).catch(function() {
-                    loadingHtml += '<div class="chatbot-loading">' +
-                        '🤖 The assistant is thinking' +
-                        '<span class="chatbot-dots">.</span>' +
-                        '<span class="chatbot-dots">.</span>' +
-                        '<span class="chatbot-dots">.</span>' +
-                        '</div>';
-                    responseDiv.html(loadingHtml);
-                });
+                // Cambiar a "Pensando..." después de un breve momento
+                setTimeout(function() {
+                    Str.get_string('js_thinking', 'block_openai_chatbot').then(function(thinkingText) {
+                        submitButton.text(thinkingText);
+                    }).catch(function() {
+                        submitButton.text('Pensando...');
+                    });
+                    
+                    Str.get_string('js_assistant_thinking', 'block_openai_chatbot').then(function(assistantThinking) {
+                        var thinkingHtml = '<div class="chatbot-question">📝 ' + escapeHtml(question) + '</div>';
+                        thinkingHtml += '<div class="chatbot-loading">' +
+                            '🤖 ' + assistantThinking +
+                            '<span class="chatbot-dots">.</span>' +
+                            '<span class="chatbot-dots">.</span>' +
+                            '<span class="chatbot-dots">.</span>' +
+                            '</div>';
+                        responseDiv.html(thinkingHtml);
+                    }).catch(function() {
+                        var thinkingHtml = '<div class="chatbot-question">📝 ' + escapeHtml(question) + '</div>';
+                        thinkingHtml += '<div class="chatbot-loading">' +
+                            '🤖 El asistente está pensando' +
+                            '<span class="chatbot-dots">.</span>' +
+                            '<span class="chatbot-dots">.</span>' +
+                            '<span class="chatbot-dots">.</span>' +
+                            '</div>';
+                        responseDiv.html(thinkingHtml);
+                    });
+                }, 800);
 
                 // Call AJAX service
                 var request = {
@@ -125,7 +151,7 @@ define(['jquery', 'core/ajax', 'core/str'], function($, Ajax, Str) {
                         Str.get_string('ask_button', 'block_openai_chatbot').then(function(askText) {
                             submitButton.text(askText);
                         }).catch(function() {
-                            submitButton.text('Ask');
+                            submitButton.text('Preguntar');
                         });
                     }
                     

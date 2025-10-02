@@ -41,9 +41,11 @@ $string['config_missing'] = 'Falta la configuración de la API de OpenAI. Por fa
 
 // JavaScript strings
 $string['js_thinking'] = 'Pensando...';
+$string['js_writing'] = 'Escribiendo...';
 $string['js_assistant_thinking'] = 'El asistente está pensando';
 $string['js_error_occurred'] = '¡Ocurrió un error!';
 $string['js_try_again'] = 'Inténtalo de nuevo';
+$string['js_writing_question'] = 'Escribiendo pregunta';
 
 // Settings
 $string['settings_general'] = 'Configuración General';

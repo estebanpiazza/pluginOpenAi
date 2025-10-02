@@ -55,9 +55,11 @@ $string['settings_max_response_time_desc'] = 'Maximum time in seconds to wait fo
 
 // JavaScript strings
 $string['js_thinking'] = 'Thinking...';
+$string['js_writing'] = 'Writing...';
 $string['js_assistant_thinking'] = 'The assistant is thinking';
 $string['js_error_occurred'] = 'An error occurred!';
 $string['js_try_again'] = 'Try again';
+$string['js_writing_question'] = 'Writing question';
 
 // Privacy
 $string['privacy:metadata'] = 'The OpenAI ChatBot block does not store any personal data locally. However, user questions are sent to OpenAI\'s servers for processing.';
