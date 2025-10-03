@@ -1,5 +1,5 @@
 <?php
-// This file is part of Moodle - http://moodle.org/
+// This file is part of Moodle - https://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -12,19 +12,21 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
  * External API for OpenAI ChatBot Block
  *
  * @package    block_openai_chatbot
  * @copyright  2025 Esteban Piazza <esteban@codeki.org>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir . '/externallib.php');
+require_once($CFG->libdir . '/blocklib.php');
+require_once($CFG->dirroot . '/blocks/openai_chatbot/block_openai_chatbot.php');
 
 /**
  * External service class for OpenAI ChatBot
@@ -65,18 +67,28 @@ class block_openai_chatbot_external extends external_api {
         // Validate context.
         $context = context::instance_by_id($params['contextid']);
         self::validate_context($context);
+        
+        // Ensure we have a valid context.
+        if (!$context) {
+            throw new invalid_parameter_exception(get_string('invalid_context', 'block_openai_chatbot'));
+        }
 
         // Check capabilities.
-        require_capability('block/openai_chatbot:addinstance', $context);
+        require_capability('block/openai_chatbot:view', $context);
 
         // Validate block instance.
         $blockinstance = $DB->get_record('block_instances', array('id' => $params['blockinstanceid']), '*', MUST_EXIST);
+        
+        // Ensure the block instance exists and is of the correct type.
+        if ($blockinstance->blockname !== 'openai_chatbot') {
+            throw new invalid_parameter_exception(get_string('invalid_block_instance', 'block_openai_chatbot'));
+        }
         
         // Clean the question.
         $cleanquestion = clean_param($params['question'], PARAM_TEXT);
         
         if (empty($cleanquestion)) {
-            throw new invalid_parameter_exception('Question cannot be empty');
+            throw new invalid_parameter_exception(get_string('question_empty', 'block_openai_chatbot'));
         }
 
         // Get block configuration.
@@ -107,8 +119,8 @@ class block_openai_chatbot_external extends external_api {
             
             return array(
                 'success' => false,
-                'message' => 'Error: ' . $e->getMessage(),
-                'html' => '<div class="alert alert-danger"><strong>Error:</strong> ' . 
+                'message' => get_string('error_message', 'block_openai_chatbot', $e->getMessage()),
+                'html' => '<div class="alert alert-danger"><strong>' . get_string('strong_error', 'block_openai_chatbot') . '</strong> ' . 
                          htmlspecialchars($e->getMessage()) . '</div>'
             );
         }

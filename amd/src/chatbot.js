@@ -1,9 +1,24 @@
+// This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+
 /**
  * OpenAI ChatBot JavaScript module
  *
  * @package    block_openai_chatbot
  * @copyright  2025 Esteban Piazza <esteban@codeki.org>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 define(['jquery', 'core/ajax', 'core/str'], function($, Ajax, Str) {
@@ -48,7 +63,12 @@ define(['jquery', 'core/ajax', 'core/str'], function($, Ajax, Str) {
                 Str.get_string('js_writing', 'block_openai_chatbot').then(function(writingText) {
                     submitButton.text(writingText);
                 }).catch(function() {
-                    submitButton.text('Escribiendo...');
+                    // Fallback to localized string
+                    Str.get_string('js_writing_fallback', 'block_openai_chatbot').then(function(fallbackText) {
+                        submitButton.text(fallbackText);
+                    }).catch(function() {
+                        submitButton.text('Escribiendo...');
+                    });
                 });
                 
                 questionInput.prop('disabled', true);
@@ -65,13 +85,24 @@ define(['jquery', 'core/ajax', 'core/str'], function($, Ajax, Str) {
                         '</div>';
                     responseDiv.html(initialHtml);
                 }).catch(function() {
-                    initialHtml += '<div class="chatbot-loading">' +
-                        '✍️ Escribiendo pregunta' +
-                        '<span class="chatbot-dots">.</span>' +
-                        '<span class="chatbot-dots">.</span>' +
-                        '<span class="chatbot-dots">.</span>' +
-                        '</div>';
-                    responseDiv.html(initialHtml);
+                    // Fallback to localized string
+                    Str.get_string('js_writing_question_fallback', 'block_openai_chatbot').then(function(fallbackText) {
+                        initialHtml += '<div class="chatbot-loading">' +
+                            '✍️ ' + fallbackText +
+                            '<span class="chatbot-dots">.</span>' +
+                            '<span class="chatbot-dots">.</span>' +
+                            '<span class="chatbot-dots">.</span>' +
+                            '</div>';
+                        responseDiv.html(initialHtml);
+                    }).catch(function() {
+                        initialHtml += '<div class="chatbot-loading">' +
+                            '✍️ Escribiendo pregunta' +
+                            '<span class="chatbot-dots">.</span>' +
+                            '<span class="chatbot-dots">.</span>' +
+                            '<span class="chatbot-dots">.</span>' +
+                            '</div>';
+                        responseDiv.html(initialHtml);
+                    });
                 });
 
                 // Cambiar a "Pensando..." después de un breve momento
@@ -79,7 +110,12 @@ define(['jquery', 'core/ajax', 'core/str'], function($, Ajax, Str) {
                     Str.get_string('js_thinking', 'block_openai_chatbot').then(function(thinkingText) {
                         submitButton.text(thinkingText);
                     }).catch(function() {
-                        submitButton.text('Pensando...');
+                        // Fallback to localized string
+                        Str.get_string('js_thinking_fallback', 'block_openai_chatbot').then(function(fallbackText) {
+                            submitButton.text(fallbackText);
+                        }).catch(function() {
+                            submitButton.text('Pensando...');
+                        });
                     });
                     
                     Str.get_string('js_assistant_thinking', 'block_openai_chatbot').then(function(assistantThinking) {
@@ -92,14 +128,26 @@ define(['jquery', 'core/ajax', 'core/str'], function($, Ajax, Str) {
                             '</div>';
                         responseDiv.html(thinkingHtml);
                     }).catch(function() {
-                        var thinkingHtml = '<div class="chatbot-question">📝 ' + escapeHtml(question) + '</div>';
-                        thinkingHtml += '<div class="chatbot-loading">' +
-                            '🤖 El asistente está pensando' +
-                            '<span class="chatbot-dots">.</span>' +
-                            '<span class="chatbot-dots">.</span>' +
-                            '<span class="chatbot-dots">.</span>' +
-                            '</div>';
-                        responseDiv.html(thinkingHtml);
+                        // Fallback to localized string
+                        Str.get_string('js_assistant_thinking_fallback', 'block_openai_chatbot').then(function(fallbackText) {
+                            var thinkingHtml = '<div class="chatbot-question">📝 ' + escapeHtml(question) + '</div>';
+                            thinkingHtml += '<div class="chatbot-loading">' +
+                                '🤖 ' + fallbackText +
+                                '<span class="chatbot-dots">.</span>' +
+                                '<span class="chatbot-dots">.</span>' +
+                                '<span class="chatbot-dots">.</span>' +
+                                '</div>';
+                            responseDiv.html(thinkingHtml);
+                        }).catch(function() {
+                            var thinkingHtml = '<div class="chatbot-question">📝 ' + escapeHtml(question) + '</div>';
+                            thinkingHtml += '<div class="chatbot-loading">' +
+                                '🤖 El asistente está pensando' +
+                                '<span class="chatbot-dots">.</span>' +
+                                '<span class="chatbot-dots">.</span>' +
+                                '<span class="chatbot-dots">.</span>' +
+                                '</div>';
+                            responseDiv.html(thinkingHtml);
+                        });
                     });
                 }, 800);
 
@@ -125,8 +173,14 @@ define(['jquery', 'core/ajax', 'core/str'], function($, Ajax, Str) {
                             errorHtml += '<div class="alert alert-danger">' + errorText + ' ' + response.message + '</div>';
                             responseDiv.html(errorHtml);
                         }).catch(function() {
-                            errorHtml += '<div class="alert alert-danger">An error occurred: ' + response.message + '</div>';
-                            responseDiv.html(errorHtml);
+                            // Fallback to localized string
+                            Str.get_string('js_error_occurred_fallback', 'block_openai_chatbot').then(function(fallbackText) {
+                                errorHtml += '<div class="alert alert-danger">' + fallbackText + ': ' + response.message + '</div>';
+                                responseDiv.html(errorHtml);
+                            }).catch(function() {
+                                errorHtml += '<div class="alert alert-danger">An error occurred: ' + response.message + '</div>';
+                                responseDiv.html(errorHtml);
+                            });
                         });
                     }
                 }).fail(function(error) {
@@ -135,8 +189,14 @@ define(['jquery', 'core/ajax', 'core/str'], function($, Ajax, Str) {
                         errorHtml += '<div class="alert alert-danger">' + errorText + '</div>';
                         responseDiv.html(errorHtml);
                     }).catch(function() {
-                        errorHtml += '<div class="alert alert-danger">Network error occurred</div>';
-                        responseDiv.html(errorHtml);
+                        // Fallback to localized string
+                        Str.get_string('js_network_error', 'block_openai_chatbot').then(function(fallbackText) {
+                            errorHtml += '<div class="alert alert-danger">' + fallbackText + '</div>';
+                            responseDiv.html(errorHtml);
+                        }).catch(function() {
+                            errorHtml += '<div class="alert alert-danger">Network error occurred</div>';
+                            responseDiv.html(errorHtml);
+                        });
                     });
                 }).always(function() {
                     // Re-enable form
@@ -151,7 +211,12 @@ define(['jquery', 'core/ajax', 'core/str'], function($, Ajax, Str) {
                         Str.get_string('ask_button', 'block_openai_chatbot').then(function(askText) {
                             submitButton.text(askText);
                         }).catch(function() {
-                            submitButton.text('Preguntar');
+                            // Fallback to localized string
+                            Str.get_string('js_ask_button_fallback', 'block_openai_chatbot').then(function(fallbackText) {
+                                submitButton.text(fallbackText);
+                            }).catch(function() {
+                                submitButton.text('Preguntar');
+                            });
                         });
                     }
                     

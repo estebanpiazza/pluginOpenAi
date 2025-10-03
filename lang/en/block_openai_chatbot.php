@@ -78,3 +78,19 @@ $string['network_error'] = 'Network error occurred. Please try again later.';
 
 // Block capabilities
 $string['openai_chatbot:view'] = 'View OpenAI ChatBot block';
+
+// Error validation messages
+$string['invalid_context'] = 'Invalid context';
+$string['invalid_block_instance'] = 'Invalid block instance';
+$string['question_empty'] = 'Question cannot be empty';
+$string['error_message'] = 'Error: {$a}';
+$string['strong_error'] = 'Error:';
+
+// JavaScript fallback strings
+$string['js_writing_fallback'] = 'Escribiendo...';
+$string['js_thinking_fallback'] = 'Pensando...';
+$string['js_assistant_thinking_fallback'] = 'El asistente está pensando';
+$string['js_error_occurred_fallback'] = 'An error occurred';
+$string['js_network_error'] = 'Network error occurred';
+$string['js_ask_button_fallback'] = 'Preguntar';
+$string['js_writing_question_fallback'] = 'Escribiendo pregunta';

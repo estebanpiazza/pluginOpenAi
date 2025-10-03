@@ -78,3 +78,19 @@ $string['network_error'] = 'Ocurrió un error de red. Por favor inténtalo más 
 
 // Block capabilities
 $string['openai_chatbot:view'] = 'Ver bloque ChatBot OpenAI';
+
+// Error validation messages
+$string['invalid_context'] = 'Contexto inválido';
+$string['invalid_block_instance'] = 'Instancia de bloque inválida';
+$string['question_empty'] = 'La pregunta no puede estar vacía';
+$string['error_message'] = 'Error: {$a}';
+$string['strong_error'] = 'Error:';
+
+// JavaScript fallback strings
+$string['js_writing_fallback'] = 'Escribiendo...';
+$string['js_thinking_fallback'] = 'Pensando...';
+$string['js_assistant_thinking_fallback'] = 'El asistente está pensando';
+$string['js_error_occurred_fallback'] = 'Ocurrió un error';
+$string['js_network_error'] = 'Ocurrió un error de red';
+$string['js_ask_button_fallback'] = 'Preguntar';
+$string['js_writing_question_fallback'] = 'Escribiendo pregunta';
